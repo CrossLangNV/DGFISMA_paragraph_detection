@@ -43,11 +43,11 @@ def annotate_paragraphs():
 
     if request.json[ 'content_type'] == 'pdf':
 
-        cas=annotate_lists_pdf( cas )
+        annotate_lists_pdf( cas )
 
     elif request.json[ 'content_type'] == 'html' or request.json[ 'content_type'] == 'xhtml':
 
-        cas=annotate_lists_eurlex_html( cas, typesystem, "html2textView", list( cas.get_view(  'html2textView' ).select( "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType" ) ) )
+        annotate_lists_eurlex_html( cas, typesystem, "html2textView")
 
     else:
         print( f"content type { request.json[ 'content_type'] } not supported by paragraph annotation app" )   

@@ -1,20 +1,25 @@
 import re
 import string
 
-def find_indices_term( term: str, sentence: str ):
+class SeekableIterator:
+    def __init__(self, iterator):
+        self.iterator = iterator
+        self.current = None
+        self.reuse = False
+
+    def __iter__(self):
+        return self
     
-    '''
-    Find matches of a given term in a given sentence using a regex. Different variants of the term will also be matches. Returns a Callable.
-    '''
+    def __next__(self):
+        return self.next()
 
-    #first translate terms like "regulation-offices" to "regulation offices"
-    translator = str.maketrans(string.punctuation, ' '*len(string.punctuation) ) #map punctuation to space
-    term=term.translate( translator )  #replace punctuation in the term with ' '
+    def next(self):
+        if self.reuse:
+            self.reuse = False
+        else:
+            self.current = None
+            self.current = next(self.iterator)
+        return self.current
 
-    term=term.replace( " ", "" ) #remove all spaces
-
-    words="([- ]*)".join( [char for char in term] )  #will match different variants. I.e. if term is "regulation offices" , regex also matches regulation-offices and regulationoffices
-    term_regex=  r"\b" + f"({words})" +r"\b"
-    
-    return re.finditer( term_regex, sentence, re.IGNORECASE )
-
+    def rewind(self):
+        self.reuse = True

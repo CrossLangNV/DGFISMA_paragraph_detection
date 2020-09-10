@@ -1,57 +1,88 @@
 import sys
-from src.utils import find_indices_term
-from typing import List, Tuple, Set
+from src.utils import SeekableIterator
+from typing import List, Tuple, Set, Generator
 
 from cassis import Cas, TypeSystem
-
-def annotate_lists_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID: str , list_of_value_between_tagtype: list ) -> Cas:
-
+    
+def annotate_lists_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID:str, \
+                               value_between_tagtype= "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
+                               paragraph_type='de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph', \
+                              ) -> Cas:
+        
     '''
-    Given a cas and its typesystem, this function annotates list and sublists. Returns the same cas object as the input cas, but now with annotations added.
+    Given a cas and its typesystem, this function annotates lists and sublists, and adds it to the cas.
     '''
     
-    Paragraph=typesystem.get_type( 'de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph' )
+    value_between_tagtype_generator=cas.get_view( SofaID ).select( value_between_tagtype )        
+    
+    seek_vbtt=SeekableIterator( value_between_tagtype_generator )
+
+    process_eurlex_html( cas, typesystem, SofaID, seek_vbtt , value_between_tagtype=value_between_tagtype, paragraph_type=paragraph_type  )
+    
+    return cas
+
+
+def annotate_lists_pdf( cas: Cas )->Cas:
+    
+    "TO BE IMPLEMENTED"
+    
+    return cas
+
+#helper functions:
+
+def process_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID: str , value_between_tagtype_seekable_generator: Generator, \
+                        value_between_tagtype= "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
+                        paragraph_type='de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph', \
+                        end=-1 ):
+
+    '''
+    Given a cas, its typesystem, and a SeekableIterator with valuebetweentagtype, this function annotates list and sublists, and adds it to the cas. 
+    '''
+    
+    Paragraph=typesystem.get_type( paragraph_type )
 
     cas_view=cas.get_view( SofaID )
-
+    
     paragraph_list=[]
     detected_p=None
-    
-    for i, tag in enumerate(list_of_value_between_tagtype):
+
+    for tag in value_between_tagtype_seekable_generator:
+        
+        #first check if not exceed the span of the covering table (for nested lists), if so rewind and stop.
+        if end>0 and tag.begin > end:
             
-        if tag.tagName =='p':
+            #Add the last detected list to the cas
+            if len( paragraph_list )>1:
+                cas_view.add_annotation( Paragraph( begin=paragraph_list[0].begin, end=paragraph_list[-1].end , divType="enumeration" ) )     
             
-            #keep track of detected p's
-            detected_p = tag
+            value_between_tagtype_seekable_generator.rewind()
+
+            return
+        
+        if tag.tagName=="p":
+            
+            detected_p=tag
             continue
-            
-        if tag.tagName == 'table': 
+        
+        if tag.tagName=="table":
             
             #if no p has been detected before, ignore this detected table
             if not detected_p:
                 continue
-            
-            #1) check if it contains a nested table, if so, recursive function call:
-            tags_covered=list(cas_view.select_covered( "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tag ))
-            if contains_table( tags_covered[1:] ): #this means it is a nested structure ( the first element of tags_covered is tag )
-                annotate_lists_eurlex_html( cas, typesystem, SofaID, tags_covered[1:] )
-            
+                        
+            tags_covered=list(cas_view.select_covered( value_between_tagtype, tag ))
+            if contains_table( tags_covered[1:] ):
+                #print( "table containing nested_list_detected: range", tag , tag.begin, tag.end )
+                process_eurlex_html(cas, typesystem, SofaID, value_between_tagtype_seekable_generator, end=tag.end  )
+                
             #2) check if it is not one of the nested tags (but don't check this for the very first detected table, when paragraph list is still empty):            
-            if paragraph_list:
-                if tag.begin < paragraph_list[-1].end:
-                    continue              
+            #if paragraph_list:
+            #    if tag.begin < paragraph_list[-1].end:
+            #        continue              
             
             #3) start of a new list if previous tag was a <p> (structure of a list is always <p></p> <table></table> <table></table>)
             #So if there is no text between the end of the detected p and the table_tag ==> start of a new list
             if not cas_view.sofa_string[ detected_p.end:tag.begin ].strip():
-                
-                #but first check if the detected p is not part of the previous detected table. 
-                #i.e. p's like this: <table><p></p></table><table></table>, should not start a new list
-                #If so ==> no new list is detected, and table tag is just added to paragraph_list
-                if paragraph_list:
-                    if (detected_p.begin < paragraph_list[-1].end) and not(cas_view.sofa_string[ paragraph_list[-1].end:tag.begin ].strip() ): 
-                        paragraph_list.append( tag )
-                        continue
                 
                 #so it is indeed the start of a new list ==> add the old list as annotation to the cas
                 if len(paragraph_list)>1:
@@ -75,19 +106,9 @@ def annotate_lists_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID: str , 
         
     #add the last detected list to the cas
     if len( paragraph_list )>1:
-        cas_view.add_annotation( Paragraph( begin=paragraph_list[0].begin, end=paragraph_list[-1].end , divType="enumeration" ) )
-        
-    return cas
-
-
-def annotate_lists_pdf( cas: Cas )->Cas:
-    
-    "TO BE IMPLEMENTED"
-    
-    return cas
-
-#helper function
-
+        cas_view.add_annotation( Paragraph( begin=paragraph_list[0].begin, end=paragraph_list[-1].end , divType="enumeration" ) )            
+      
+            
 def contains_table(  list_of_value_between_tagtype ):
     for tag in list_of_value_between_tagtype:
         if tag.tagName=='table':
