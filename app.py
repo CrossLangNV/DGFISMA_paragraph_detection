@@ -10,15 +10,17 @@ from cassis.typesystem import load_typesystem
 from cassis.xmi import load_cas_from_xmi
 
 from src.annotations import annotate_lists_eurlex_html, annotate_lists_pdf
+from src.segment import TextSegmenter
 
 app = Flask(__name__)
    
 TYPESYSTEM_PATH="/work/typesystems/typesystem.xml"
+DEEPSEGMENT_MODEL_PATH="/work/deepsegment_model"
     
 @app.route('/annotate_paragraphs', methods=['POST'])
 def annotate_paragraphs():    
     if not request.json:
-        abort(400) 
+        abort(400)
     output_json={}
     
     if ('cas_content' not in request.json) or ( 'content_type' not in request.json ):
@@ -42,11 +44,19 @@ def annotate_paragraphs():
     cas=load_cas_from_xmi( decoded_cas_content, typesystem=typesystem  )
 
     if request.json[ 'content_type'] == 'pdf':
-
+        
+        textsegmenter=TextSegmenter( cas , DEEPSEGMENT_MODEL_PATH )
+        
+        #use deepsegment model to segment the sofa ( _InitialView, result of Apache TiKa pdfparser)
+        textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
+                                  value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )
+        
+        #annotate the paragraphs
         annotate_lists_pdf( cas )
 
     elif request.json[ 'content_type'] == 'html' or request.json[ 'content_type'] == 'xhtml':
 
+        #annotate the paragraphs
         annotate_lists_eurlex_html( cas, typesystem, "html2textView")
 
     else:

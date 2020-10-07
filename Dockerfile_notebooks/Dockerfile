@@ -26,7 +26,9 @@ ENV PATH=/miniconda/bin:${PATH}
 RUN conda update -y conda
 
 RUN conda install -y python=3.7.3 && \
-conda install flask==1.1.1 
+conda install flask==1.1.1 && \
+conda install -c conda-forge spacy==2.3.2 && \
+conda install -c conda-forge spacy-model-en_core_web_lg
 
 #Install Cython
 RUN apt-get update
@@ -34,8 +36,8 @@ RUN apt-get -y install --reinstall build-essential
 RUN apt-get -y install gcc
 RUN pip install Cython
 
-RUN pip install bs4==0.0.1 beautifulsoup4==4.5.3 dkpro-cassis==0.3.0 pexpect ipython jupyter jupyterlab pytest
-
+RUN pip install bs4==0.0.1 beautifulsoup4==4.5.3 dkpro-cassis==0.3.0 deepsegment==2.3.1 tensorflow==1.14 fasttext==0.9.2 nltk==3.5 pyspellchecker==0.5.5 langdetect==1.0.8 plac==1.2.0 ipython jupyter jupyterlab pytest && \
+python -m nltk.downloader punkt
 
 #pip install git+https://github.com/ArneDefauw/dkpro-cassis@master
 
