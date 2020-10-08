@@ -17,3 +17,11 @@ def get_path_table( request ):
 def get_path_typesystem( request ):
     return os.path.join( FIXTURE_DIR , "typesystems", request.param )
 
+@pytest.fixture(scope='function')
+def get_path_txt( request ):
+    return os.path.join( FIXTURE_DIR , "txt", request.param )
+
+@pytest.fixture(scope='function')
+def get_path_embeddings( request ):
+    return os.path.join( FIXTURE_DIR , "models", "GLOVE" , request.param )
+

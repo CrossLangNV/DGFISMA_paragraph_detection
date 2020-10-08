@@ -68,6 +68,10 @@ class TextSegmenter():
         
         concatenated_text = concat_list_spellcheck( self.cas.sofa_string.split( "\n" ) )
         
+        if not concatenated_text :
+            self.segments=[""]
+            return self.segments
+        
         self.segments=self.segmenter.segment_long( concatenated_text, n_window=n_window )
         return self.segments
         

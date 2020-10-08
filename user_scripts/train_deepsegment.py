@@ -18,7 +18,8 @@ from pathlib import Path
     seed=( "seed used for random shuffling of segments", "option" ),
     save_train_test_split=( "whether to save the sentences used for training and validation", "option" ),
     epochs=( "number of epochs", "option" ),
-    batch_size=( "batch size used for training", "option" )
+    batch_size=( "batch size used for training", "option" ),
+    max_sents_per_example=( "maximum number of sentences sampled per sentence (generation of training/validation data)", "option" )
 )
 def main(segments: Path,
          output_dir: Path,
@@ -28,8 +29,24 @@ def main(segments: Path,
          save_train_test_split: int=1 ,  #TODO: make boolean (issue with plac)
          epochs: int = 20,
          batch_size: int = 64,
+         max_sents_per_example: int= 6
          ):
     
+    '''
+    Train a deepsegment model. Input segments will be split in training and validation data. 
+    
+    :param segments: Path. Segments.
+    :param output_dir: Path. Path to the output folder where deepsegment model will be saved 
+    :param embeddings_path: Path. Path to pretrained embeddings. 
+    :param train_fraction: float. Fraction of data used for training.
+    :param seed: float. Seed used for random shuffling of segments.
+    :param save_train_test_split: int. Whether to save the sentences used for training and validation.
+    :param epochs: int. Number of epochs.
+    :param batch_size: int. Batch size used for training.
+    :param max_sents_per_example: int. Maximum number of sentences sampled per sentence (generation of training/validation data.
+    :return None.
+    '''
+
     os.makedirs( output_dir, exist_ok=True  )
     
     sentences=open( segments ).read().rstrip("\n").split( "\n" )
@@ -58,8 +75,8 @@ def main(segments: Path,
             f.write( "\n".join( sentences[train_size:] )  )    
                
     
-    x, y = generate_data( sentences[:train_size] , max_sents_per_example=6, n_examples=len( sentences[:train_size])  )
-    vx, vy = generate_data( sentences[train_size:] , max_sents_per_example=6, n_examples=len( sentences[train_size:] ) )
+    x, y = generate_data( sentences[:train_size] , max_sents_per_example=max_sents_per_example, n_examples=len( sentences[:train_size])  )
+    vx, vy = generate_data( sentences[train_size:] , max_sents_per_example=max_sents_per_example, n_examples=len( sentences[train_size:] ) )
 
     f = io.StringIO()
     with redirect_stdout(f):
