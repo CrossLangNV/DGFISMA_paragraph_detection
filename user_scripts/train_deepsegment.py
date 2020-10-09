@@ -43,7 +43,7 @@ def main(segments: Path,
     :param save_train_test_split: int. Whether to save the sentences used for training and validation.
     :param epochs: int. Number of epochs.
     :param batch_size: int. Batch size used for training.
-    :param max_sents_per_example: int. Maximum number of sentences sampled per sentence (generation of training/validation data.
+    :param max_sents_per_example: int. Maximum number of sentences sampled per sentence (generation of training/validation data).
     :return None.
     '''
 

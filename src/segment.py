@@ -3,8 +3,9 @@ from cassis import Cas
 from cassis.typesystem import TypeSystem
 
 import logging
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.ERROR) #fix loggin issue with deepsegment
 from deepsegment import DeepSegment
+import spacy
 
 from src.utils import concat_list_spellcheck
 
@@ -14,15 +15,20 @@ class TextSegmenter():
     Segment the sofa of a Cas.
     '''
         
-    def __init__( self, cas: Cas, segment_path: str ):
+    def __init__( self, cas: Cas, segment_path: str, segment_type: str= 'deepsegment' ):
         
         '''
         :param cas: Cas. Cas object (mutable object).
-        :param segment_path. Str. Path to the segmentation model.
+        :param segment_path. Str. Path to the segmentation model/name of the spacy model.
+        :param segment_type. Str. Type of segmentation model used: deepsegment or spacy.
         '''
         
         self.cas=cas
         self.segment_path=segment_path
+        if segment_type not in [ 'deepsegment', 'spacy' ]:
+            raise ValueError(f"segment type {self.segment_type} not supported. Only 'deepsegment' and 'spacy' segmenters are supported.")
+        else:
+            self.segment_type=segment_type
         
         
     def segment_and_add_to_cas( self, typesystem: TypeSystem , OldSofaID: str="_InitialView" , NewSofaID: str='html2textView', value_between_tagtype: \
@@ -39,8 +45,15 @@ class TextSegmenter():
         :return: None.        
         '''
         
-        self.load_deepsegment()
-        self.segment_deepsegment()
+        if self.segment_type=='deepsegment':
+            self.load_deepsegment()
+            self.segment_deepsegment()
+        elif self.segment_type=='spacy':
+            self.load_spacy_model()
+            self.segment_spacy()
+        else:
+            raise ValueError(f"segment type {self.segment_type} not supported. Only 'deepsegment' and 'spacy' segmenters are supported.")
+            
         self.add_segments_to_cas( typesystem, OldSofaID=OldSofaID, NewSofaID=NewSofaID, value_between_tagtype=value_between_tagtype, tagName=tagName )
         
         
@@ -74,13 +87,52 @@ class TextSegmenter():
         
         self.segments=self.segmenter.segment_long( concatenated_text, n_window=n_window )
         return self.segments
+      
         
+    def load_spacy_model( self ):
         
+        '''
+        Load spacy model.
+        
+        :return: None.
+        '''
+        
+        print( f"loading spacy model {self.segment_path}" )
+        self.segmenter=spacy.load( self.segment_path )
+        
+    def segment_spacy(self ):    
+        
+        '''
+        Segment the sofa using spacy model.
+        Function utils.concat_list_spellcheck is used to remove newlines and fix words split with "-" via a spellchecker.
+
+        :param n_window: int. Window size.
+        :return: list. List of strings (segments).     
+        '''
+        
+        concatenated_text = concat_list_spellcheck( self.cas.sofa_string.split( "\n" ) )
+
+        if not concatenated_text :
+            self.segments=[""]
+            return self.segments
+        
+        spacy_sentences=[]
+        batch_size=self.segmenter.max_length #spacy model has a limit of 1000000 characters
+        chunks = (len( concatenated_text ) - 1) // batch_size + 1  
+        for i in range( chunks ):
+            batch=concatenated_text[ i*batch_size:(i+1)*batch_size ]    
+            spacy_sentences+=[ sentence.text for sentence in self.segmenter( batch ).sents ]
+
+        self.segments=spacy_sentences
+        
+        return self.segments
+
+     
     def add_segments_to_cas( self, typesystem: TypeSystem , OldSofaID: str="_InitialView" , NewSofaID: str='html2textView', \
                             value_between_tagtype: str="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName: str='p' ):
         
         '''
-        Create new view (sofa) and add segments to the view as value_between_tagtype
+        Create new view (sofa) and add segments (self.segments) obtained via segmenter to the view as value_between_tagtype
 
         :param typesystem: cassis.typesystem.Typesystem. Corresponding Typesystem of the cas.
         :param OldSofaID: String. Name of the old sofa.

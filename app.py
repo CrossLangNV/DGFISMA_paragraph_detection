@@ -56,8 +56,10 @@ def annotate_paragraphs():
 
     elif request.json[ 'content_type'] == 'html' or request.json[ 'content_type'] == 'xhtml':
 
-        #annotate the paragraphs
-        annotate_lists_eurlex_html( cas, typesystem, "html2textView")
+        #annotate_lists_eurlex_html( cas, typesystem, "html2textView")
+        output_json['cas_content']=request.json['cas_content']
+        output_json['content_type']=request.json[ 'content_type' ]
+        return output_json
 
     else:
         print( f"content type { request.json[ 'content_type'] } not supported by paragraph annotation app" )   

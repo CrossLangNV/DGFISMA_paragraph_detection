@@ -2,6 +2,7 @@
 notebooks/
 tests/test_files/models/
 *.ipynb
+DATA/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

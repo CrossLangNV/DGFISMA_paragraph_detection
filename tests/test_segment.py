@@ -47,29 +47,38 @@ def test_text_segmenter( get_path_txt, get_path_embeddings, get_path_typesystem 
 
         for document in test_documents:
         
-            cas = Cas( typesystem=typesystem )
-    
-            cas.sofa_string = document
-        
             #3) make instance of TextSegmenter (this will load the trained DeepSegment into textsegmenter object)
-            textsegmenter=TextSegmenter( cas, output_dir )
-
-            #4) segment the sofa of the _InitialView of the cas, create html2textView, and add to Cas.
-            textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
-                                          value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )
-
-            assert( isinstance( cas.get_view( "html2textView" ).sofa_string, str ) )
-
-            #5) check if annotations are added correct
-            segments = cas.get_view( "html2textView" ).sofa_string.split( "\n" )
             
-            #sanity check of the segments
-            assert " ".join( segments ) == document
+            for segment_type in [ 'deepsegment', 'spacy' ]:
+                
+                cas = Cas( typesystem=typesystem )
+    
+                cas.sofa_string = document
+                
+                if segment_type=='deepsegment':
             
-            annotations = list( cas.get_view( "html2textView").select( "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType" ) ) 
+                    textsegmenter=TextSegmenter( cas, output_dir, segment_type=segment_type )
+                
+                elif segment_type=='spacy':
+                    
+                    textsegmenter=TextSegmenter( cas, 'en_core_web_lg' , segment_type=segment_type )
 
-            assert( len( segments ) == len( annotations ) )
+                #4) segment the sofa of the _InitialView of the cas, create html2textView, and add to Cas.
+                textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
+                                              value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )
 
-            for segment, annotation in zip( segments, annotations  ):
-                assert(segment == annotation.get_covered_text())
+                assert( isinstance( cas.get_view( "html2textView" ).sofa_string, str ) )
+
+                #5) check if annotations are added correct
+                segments = cas.get_view( "html2textView" ).sofa_string.split( "\n" )
+
+                #sanity check of the segments
+                assert " ".join( segments ) == document
+
+                annotations = list( cas.get_view( "html2textView").select( "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType" ) ) 
+
+                assert( len( segments ) == len( annotations ) )
+
+                for segment, annotation in zip( segments, annotations  ):
+                    assert(segment == annotation.get_covered_text())
                 
