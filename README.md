@@ -96,24 +96,22 @@ textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , Ne
 
 ## Comparison Spacy DeepSegment:
 
-When 
+When evaluated on 1000 held out (EurLex) segments:
+
+
+Deepsegment |  | precision | recall | f1-score | support |
+--- | --- | --- | --- |--- |--- |
+O | | 1.00 | 1.00 | 1.00 | 31573 | 
+--- | --- | --- | --- |--- |--- |
+B | | 0.95 | 0.95 | 0.95 | 1000 | 
 
 
 
-Deepsegment |  | #2 | #3 | #4 | #5 | #6 | #7 | #8 | #9 | #10 | #11
---- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
-Seconds | 301 | 283 | 290 | 286 | 289 | 285 | 287 | 287 | 272 | 276 | 269
-
-
-
-              precision    recall  f1-score   support
-
-           0       1.00      1.00      1.00     31573
-           1       0.95      0.95      0.95      1000
-
-    accuracy                           1.00     32573
-   macro avg       0.97      0.97      0.97     32573
-weighted avg       1.00      1.00      1.00     32573
+Spacy (*en_core_web_lg*) |  | precision | recall | f1-score | support |
+--- | --- | --- | --- |--- |--- |
+O | | 0.99 | 0.97 | 0.98 | 36895 | 
+--- | --- | --- | --- |--- |--- |
+B | | 0.38 | 0.63 | 0.47 | 1000 | 
 
 
 
