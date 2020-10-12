@@ -34,8 +34,7 @@ This repository contains user scripts to train a DeepSegment model (user_scripts
 
 *train_fasttext.main( "input_sentences.txt" , \
                     "fasttext_output_dir",\
-                    epochs=10,\
-)*
+                    epochs=10 )*
 
 Or via command line:
 
@@ -54,10 +53,9 @@ output_dir \
                        epochs=4 ,\
                        train_fraction=0.95, \
                        save_train_test_split=1, \
-                       batch_size=64,\
-                      )*
+                       batch_size=64 )*
 
-Or via command lien:
+Or via command line:
 
 *python train_deepsegment \
 input_sentences.txt \
@@ -65,15 +63,14 @@ deepsegment_output_dir \
 fasttext_output_dir/model.vec \
 -epochs 4 \
 -train_fraction 0.95, \
-batch_size=64*
+-batch_size=64*
 
 3) Evaluate Deepsegment:
 
 *from user_scripts import evaluate_deepsegment
 evaluate_deepsegment.main( "sentences_valid.txt", \
                           "deepsegment_output_dir", \
-                          n_window=20 \
-                         )*
+                          n_window=20 )*
                 
 Or via command line:
 
@@ -81,6 +78,8 @@ Or via command line:
 sentences_valid.txt \
 deepsegment_output_dir \
 -n_window 20*
+
+The sentences used for validation should be segments split via newline ("\n"). The evaluation script will convert the sentences to the BIO format (B=first token of the segment, O: all tokens following this B, e.g.: "My first test sentence\n" -> B O O O), and return f1/precision/recall scores (B = positive label).
 
 ## Spacy segmenter
 
