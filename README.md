@@ -94,6 +94,31 @@ textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , Ne
                               value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )*
 
 
+## Comparison Spacy DeepSegment:
+
+When 
+
+
+
+Deepsegment |  | #2 | #3 | #4 | #5 | #6 | #7 | #8 | #9 | #10 | #11
+--- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
+Seconds | 301 | 283 | 290 | 286 | 289 | 285 | 287 | 287 | 272 | 276 | 269
+
+
+
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     31573
+           1       0.95      0.95      0.95      1000
+
+    accuracy                           1.00     32573
+   macro avg       0.97      0.97      0.97     32573
+weighted avg       1.00      1.00      1.00     32573
+
+
+
+
+
 ## Unit test
 
 For unit test, run *pytest* from command line. 
