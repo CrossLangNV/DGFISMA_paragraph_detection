@@ -94,26 +94,21 @@ textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , Ne
                               value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )*
 
 
-## Comparison Spacy DeepSegment:
+## Comparison Spacy versus DeepSegment:
 
-When evaluated on 1000 held out (EurLex) segments:
+When evaluated on 1000 held out (EURLex) segments:
 
 
-Deepsegment |  | precision | recall | f1-score | support |
+DeepSegment |  | precision | recall | f1-score | support |
 --- | --- | --- | --- |--- |--- |
 O | | 1.00 | 1.00 | 1.00 | 31573 | 
---- | --- | --- | --- |--- |--- |
 B | | 0.95 | 0.95 | 0.95 | 1000 | 
-
 
 
 Spacy (*en_core_web_lg*) |  | precision | recall | f1-score | support |
 --- | --- | --- | --- |--- |--- |
 O | | 0.99 | 0.97 | 0.98 | 36895 | 
---- | --- | --- | --- |--- |--- |
 B | | 0.38 | 0.63 | 0.47 | 1000 | 
-
-
 
 
 
