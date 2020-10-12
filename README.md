@@ -28,6 +28,16 @@ We refer to tests/test_files/xmi/ for example xmi's, and to be extracted lists a
 
 This repository contains user scripts to train a DeepSegment model (user_scripts/train_deepsegment.py). One can either use pretrained embeddings (e.g. Glove embeddings http://nlp.stanford.edu/data/glove.6B.zip ), or train fastText embeddings (user_scripts/train_fastText).
 
+
+1) Training data fastText/DeepSegment. 
+
+The training data consists of 3M segments scraped from the EUR-lex website. 
+
+By selecting the text in between p'tags of these scraped html's we obtained a collection of sentences that are well segmented. As an extra cleaning step, we limited ourself to segments containing more than 2 tokens, less than 1000 characters, and containing at least on alphabetic character.
+
+The FastText model was trained on 3M segments, and the DeepSegment model on a random subset of 1M segments. 
+
+
 1) Train fastText embeddings:
 
 *from user_scripts import train_fasttext*
