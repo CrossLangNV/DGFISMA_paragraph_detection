@@ -9,7 +9,7 @@ Make sure to:
 
 1) Set the path to the correct typesystem in dbuild.sh ( e.g. https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/typesystems/typesystem.xml )
 
-2) Set the path to a pretrained deepSegment model in dbuild.sh.
+2) Set the path to a pretrained deepSegment model in dbuild.sh ( see https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0 ).
 
 Given a json, e.g.: https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/json/minus_lesser_of.json , with a "cas_content" and "content_type" field, a json with the same fields will be returned (e.g. https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/response_json/small_nested_tables_response.json) , but with paragraph annotations added. 
 
@@ -33,12 +33,16 @@ This repository contains user scripts to train a DeepSegment model (user_scripts
 
 The training data consists of 3M segments scraped from the EUR-lex website. 
 
+(see https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0)
+
 By selecting the text in between p'tags of these scraped html's we obtained a collection of sentences that are well segmented. As an extra cleaning step, we limited ourself to segments containing more than 2 tokens, less than 1000 characters, and containing at least on alphabetic character.
 
 The FastText model was trained on 3M segments, and the DeepSegment model on a random subset of 1M segments. 
 
+See https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0 for pretrained FastText and DeepSegment models.
 
-1) Train fastText embeddings:
+
+2) Train fastText embeddings:
 
 *from user_scripts import train_fasttext*
 
@@ -53,7 +57,7 @@ input_sentences.txt \
 output_dir \
 -epochs 10*
 
-2) Train DeepSegment:
+3) Train DeepSegment:
 
 *from user_scripts import train_deepsegment*
 
@@ -75,7 +79,7 @@ fasttext_output_dir/model.vec \
 -train_fraction 0.95, \
 -batch_size=64*
 
-3) Evaluate Deepsegment:
+4) Evaluate Deepsegment:
 
 *from user_scripts import evaluate_deepsegment
 evaluate_deepsegment.main( "sentences_valid.txt", \
