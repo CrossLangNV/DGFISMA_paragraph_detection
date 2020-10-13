@@ -125,7 +125,6 @@ O | | 0.99 | 0.97 | 0.98 | 36895 |
 B | | 0.38 | 0.63 | 0.47 | 1000 | 
 
 
-
 ## Unit test
 
 For unit test, run *pytest* from command line. 
