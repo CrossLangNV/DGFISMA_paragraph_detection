@@ -313,11 +313,12 @@ def get_deepest_child_tags(  cas: Cas, SofaID: str , tagnames : Set[str] = set( 
         
         #helper function
         if len( [item for item in cas.get_view( SofaID ).select_covered(  value_between_tagtype , tag ) \
-                 if item.tagName in tagnames ] ) > 1:
+                 if (item.tagName in tagnames and item.get_covered_text() ) ] ) > 1:
             return False
         else:
             return True
-
+        
+        
     for tag in cas.get_view( SofaID ).select( value_between_tagtype ):
         if tag.tagName in set(tagnames) and deepest_child(  cas, SofaID, tag, tagnames ):
             sentence=tag.get_covered_text().strip()

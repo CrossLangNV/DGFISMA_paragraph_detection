@@ -15,7 +15,8 @@ from src.annotations import annotate_lists_eurlex_html, annotate_lists_flat_html
                         ("minus_lesser_of.xmi", "minus_lesser_of_lists.txt", "typesystem.xml" ),
                         ("doc_bf4ef384-bd7a-51c8-8f7d-d2f61865d767.xmi", "doc_bf4ef384-bd7a-51c8-8f7d-d2f61865d767_lists.txt", "typesystem.xml" ),
                         ("double_nested_list.xmi", "double_nested_list_lists.txt", "typesystem.xml" ),
-                        ("doc_3b30d182-e395-5e6c-991a-b57cd01598d0.xmi", "doc_3b30d182-e395-5e6c-991a-b57cd01598d0_lists.txt", "typesystem.xml" )] , 
+                        ("doc_3b30d182-e395-5e6c-991a-b57cd01598d0.xmi", "doc_3b30d182-e395-5e6c-991a-b57cd01598d0_lists.txt", "typesystem.xml" ),
+                        ("doc_03999998-5925-5d85-a3bf-2595dc008002.xmi", "doc_03999998-5925-5d85-a3bf-2595dc008002_lists.txt", "typesystem.xml" )] , 
                          indirect=["get_path_xmi", "get_path_table", "get_path_typesystem"  ])
 def test_eurlex_annotations( get_path_xmi, get_path_table, get_path_typesystem  ):
     
