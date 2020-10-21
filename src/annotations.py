@@ -6,6 +6,13 @@ from src.utils import SeekableIterator
 from typing import List, Tuple, Set, Generator
 
 from cassis import Cas, TypeSystem
+
+'''
+Module for adding paragraph annotations to a cas. 
+annotate_lists_eurlex_html will use the 'table' and 'p' tags available in the html for detection of paragraphs (i.e. lists/sublists).  
+annotate_lists_flat_html_pdf will use the plain text for detection of paragraphs (i.e. lists/sublists).
+'''
+
     
 def annotate_lists_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID:str, \
                                value_between_tagtype= "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
