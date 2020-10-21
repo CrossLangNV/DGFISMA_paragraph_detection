@@ -11,9 +11,15 @@ def annotate_lists_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID:str, \
                                value_between_tagtype= "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
                                paragraph_type='de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph', \
                               ) -> Cas:
-        
     '''
-    Given a cas and its typesystem, this function annotates lists and sublists, and adds it to the cas.
+    Given a cas and its typesystem, this function annotates (as paragraph_type) lists and sublists (enumerations) using available tags ('tables', 'p' tags), and adds it to the cas.
+    
+    :param cas: Cas. Cas object (mutable object)
+    :param typesystem: cassis.typesystem.Typesystem. Corresponding Typesystem of the cas.
+    :param SofaID: String. Name of the sofa.
+    :param value_between_tagtype: String.
+    :param paragraph_type: String. 
+    :return: Cas.
     '''
     
     value_between_tagtype_generator=cas.get_view( SofaID ).select( value_between_tagtype )        
@@ -30,10 +36,21 @@ def annotate_lists_flat_html_pdf( cas: Cas, typesystem: TypeSystem, SofaID:str, 
                                paragraph_type='de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph', \
                               ) -> Cas:
     '''
-    Given a cas and its typesystem, this function annotates lists and sublists, and adds it to the cas.
+    Given a cas, this function will detect and annotate (as paragraph_type) all lists and sublists (enumerations) using regexes.
+    If the cas contains the following 'p' tags, then they will be annotated with the paragraph_type:
+    Something:
+    (a) first sentence
+    (b) second sentence
+     
+    :param cas: Cas. Cas object (mutable object)
+    :param typesystem: cassis.typesystem.Typesystem. Corresponding Typesystem of the cas.
+    :param SofaID: String. Name of the sofa.
+    :param value_between_tagtype: String.
+    :param paragraph_type: String. 
+    :return: int. Position in the Seekable Iterator.
     '''
     
-    value_between_tagtype_generator=iter( get_deepest_child_tags( cas, SofaID, tagnames = set( 'p'), value_between_tagtype = value_between_tagtype ) )
+    value_between_tagtype_generator=get_deepest_child_tags( cas, SofaID, tagnames = set( 'p'), value_between_tagtype = value_between_tagtype ) 
     
     seek_vbtt=SeekableIterator( value_between_tagtype_generator )
     
@@ -52,6 +69,15 @@ def process_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID: str , value_b
 
     '''
     Given a cas, its typesystem, and a SeekableIterator with valuebetweentagtype, this function annotates list and sublists, and adds it to the cas. 
+    
+    :param cas: Cas. Cas object (mutable object)
+    :param typesystem: cassis.typesystem.Typesystem. Corresponding Typesystem of the cas.
+    :param SofaID: String. Name of the sofa.
+    :param value_between_tagtype_seekable_generator: Generator. Seekable Iterator.
+    :param value_between_tagtype: String.
+    :param paragraph_type: String. 
+    :param end: int. Position, needed for recursive function calls.
+    :return: None.
     '''
     
     Paragraph=typesystem.get_type( paragraph_type )
@@ -132,13 +158,18 @@ def contains_table(  list_of_value_between_tagtype ):
 
 
 def process_flat_html_pdf( cas: Cas, typesystem: TypeSystem, SofaID: str, value_between_tagtype_seekable_generator: Generator, \
-                           paragraph_type: str = 'de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph', nested: bool = False ):
-
-    '''
-    Need to write this part. 
+                           paragraph_type: str = 'de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph', nested: bool = False ) -> int:
     
-    :param article: List of articles (String). 
-    :returns: List of annotated segements (String).
+    '''
+    Given a cas, and a SeekableIterator with valuebetweentagtype, this function will detect all lists and sublists (enumerations, also nested)) using regexes (see get_enumerator).
+        
+    :param cas: Cas. Cas object (mutable object)
+    :param typesystem: cassis.typesystem.Typesystem. Corresponding Typesystem of the cas.
+    :param SofaID: String. Name of the sofa.
+    :param value_between_tagtype_seekable_generator: Generator. Seekable Iterator.
+    :param paragraph_type: String. 
+    :param nested: bool. Needed for recursive function calls.
+    :return: int. Position in the Seekable Iterator.
     '''
     
     Paragraph=typesystem.get_type( paragraph_type )
@@ -227,7 +258,7 @@ def process_flat_html_pdf( cas: Cas, typesystem: TypeSystem, SofaID: str, value_
             else:
                 
                 #add annotation and empty paragraph_list. 
-                #also check if length of paragraph > 1. We do not want to add the trivial ones
+                #also check if length of paragraph > 1. We do not want to add paragraphs consisting of only "something:"
                 if len( paragraph_list )>1:
                     
                     if paragraph_list[-1].end<=position:
@@ -262,12 +293,13 @@ def get_deepest_child_tags(  cas: Cas, SofaID: str , tagnames : Set[str] = set( 
     
     '''
     Given a cas, and a view (SofaID), this function selects all ValueBetweenTagType elements ( with tag.tagName in the set tagnames ), 
-    and extracts only the deepest child of the to be extracted tagnames
+    and extracts only the deepest childs of the to be extracted tagnames
         
     :param cas: cassis.typesystem.Typesystem. Corresponding Typesystem of the cas.
     :param SofaID: String. Name of the sofa.
     :param tagnames: String. tagtypes to extract.
-    :return: Tuple. Tuple with extracted text and the begin and end postion of the extracted text in the sofa.
+    :param value_between_tagtype: String.
+    :return: Generator.
     '''
     
     def deepest_child( cas:Cas, SofaID:str , tag ,tagnames: Set[str] = set( 'p' ) ) -> bool:
@@ -279,18 +311,26 @@ def get_deepest_child_tags(  cas: Cas, SofaID: str , tagnames : Set[str] = set( 
         else:
             return True
 
-    tags=[]
     for tag in cas.get_view( SofaID ).select( value_between_tagtype ):
         if tag.tagName in set(tagnames) and deepest_child(  cas, SofaID, tag, tagnames ):
             sentence=tag.get_covered_text().strip()
             if sentence:
-                tags.append(tag )
-                
-    return tags
+                yield tag
+
                 
                 
 def get_enumerator( sentence: str, list_type: int = -1 ) ->Tuple[ str, int ]:
 
+    '''
+    Given a sentence, and list_type (7 list types), this function gets the enumerator, and the list type. 
+    Example:
+    (a) some sentence -> (a), 2
+    
+    :param sentence: String.
+    :param list_type: int.
+    :return: Tuple.
+    '''
+    
     enumerator=''
 
     alphabet_list = list( string.ascii_lowercase )
@@ -330,7 +370,7 @@ def get_enumerator( sentence: str, list_type: int = -1 ) ->Tuple[ str, int ]:
     #list of regexes:
     regex_list=[ regex_option_1 , regex_option_2 , regex_option_3 , regex_option_4, regex_option_5, regex_option_6, regex_option_7  ]
 
-    detected_list_type=None  #the type of the detected enumeration (i.e. 7 type of enumerations, and return which one is detected)
+    detected_list_type=None  #the type of the detected enumeration (i.e. 7 types of enumerations, and return which one is detected)
     
     for i,regex in enumerate(regex_list):
         
@@ -341,7 +381,7 @@ def get_enumerator( sentence: str, list_type: int = -1 ) ->Tuple[ str, int ]:
 
             if enumerator=="(i)" and (list_type ==-1 and i==2  ): #if you detect (i), but you are not in list type 2, continue (i.e. probably start of list type 3)
                 continue
-            elif enumerator=="(v)" and (list_type == 3 and i==2 ): #same
+            elif enumerator=="(v)" and (list_type == 3 and i==2 ): #you detect (v), but you are in list type 3 ==> (v) indicates continuation of list type 3
                 continue
             elif enumerator=="(x)" and (list_type == 3 and i==2 ): #same
                 continue
@@ -352,3 +392,19 @@ def get_enumerator( sentence: str, list_type: int = -1 ) ->Tuple[ str, int ]:
         detected_list_type=i
 
     return enumerator, detected_list_type
+
+def is_old_eurlex( cas: Cas, SofaID: str, value_between_tagtype= "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType" ) -> bool:
+    
+    '''
+    Given a cas, and a view (SofaID), this function decides of the html in the cas is an old eurlex, or a new eurlex document, by looking at the occurence of the txt_te tag.
+        
+    :param cas: cassis.typesystem.Typesystem. Corresponding Typesystem of the cas.
+    :param SofaID: String. Name of the sofa.
+    :param value_between_tagtype: String.
+    :return: bool.
+    '''
+    
+    for vbtt in cas.get_view( SofaID ).select( value_between_tagtype ):
+        if vbtt.tagName == "txt_te":
+            return True
+    return False

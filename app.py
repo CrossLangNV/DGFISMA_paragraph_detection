@@ -9,7 +9,7 @@ import base64
 from cassis.typesystem import load_typesystem
 from cassis.xmi import load_cas_from_xmi
 
-from src.annotations import annotate_lists_eurlex_html, annotate_lists_pdf
+from src.annotations import annotate_lists_eurlex_html, annotate_lists_flat_html_pdf, is_old_eurlex
 from src.segment import TextSegmenter
 
 app = Flask(__name__)
@@ -51,15 +51,17 @@ def annotate_paragraphs():
         textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
                                   value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )
         
-        #annotate the paragraphs
-        annotate_lists_pdf( cas )
+        #no annotation of the paragraphs for pdf (i.e. lists/sublist), would introduce too much noise
 
     elif request.json[ 'content_type'] == 'html' or request.json[ 'content_type'] == 'xhtml':
+        
+        if is_old_eurlex(cas, "html2textView" ):
 
-        annotate_lists_eurlex_html( cas, typesystem, "html2textView")
-        #output_json['cas_content']=request.json['cas_content']
-        #output_json['content_type']=request.json[ 'content_type' ]
-        #return output_json
+            annotate_lists_flat_html_pdf( cas, typesystem, "html2textView" )
+
+        else:
+
+            annotate_lists_eurlex_html( cas, typesystem, "html2textView")
 
     else:
         print( f"content type { request.json[ 'content_type'] } not supported by paragraph annotation app" )   
