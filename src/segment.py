@@ -65,8 +65,9 @@ class TextSegmenter():
         :return: None.
         '''
         
-        print( f"loading deepsegment from {self.segment_path}" )
-        self.segmenter = DeepSegment(lang_code=None, checkpoint_path= os.path.join( self.segment_path, 'checkpoint') , params_path=os.path.join( self.segment_path, 'params' ) , utils_path= os.path.join(  self.segment_path, 'utils' ) , tf_serving=False, checkpoint_name=None)
+        if not hasattr(self, 'segmenter'):
+            print( f"loading deepsegment from {self.segment_path}" )
+            self.segmenter = DeepSegment(lang_code=None, checkpoint_path= os.path.join( self.segment_path, 'checkpoint') , params_path=os.path.join( self.segment_path, 'params' ) , utils_path= os.path.join(  self.segment_path, 'utils' ) , tf_serving=False, checkpoint_name=None)
     
     
     def segment_deepsegment( self, n_window: int = 20 ):
