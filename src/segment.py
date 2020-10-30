@@ -15,7 +15,7 @@ class TextSegmenter():
     Segment the sofa of a Cas.
     '''
         
-    def __init__( self, cas: Cas, segment_path: str, segment_type: str= 'deepsegment' ):
+    def __init__( self, segment_path: str, segment_type: str= 'deepsegment' ):
         
         '''
         :param cas: Cas. Cas object (mutable object).
@@ -23,7 +23,6 @@ class TextSegmenter():
         :param segment_type. Str. Type of segmentation model used: deepsegment or spacy.
         '''
         
-        self.cas=cas
         self.segment_path=segment_path
         if segment_type not in [ 'deepsegment', 'spacy' ]:
             raise ValueError(f"segment type {self.segment_type} not supported. Only 'deepsegment' and 'spacy' segmenters are supported.")
@@ -31,7 +30,7 @@ class TextSegmenter():
             self.segment_type=segment_type
         
         
-    def segment_and_add_to_cas( self, typesystem: TypeSystem , OldSofaID: str="_InitialView" , NewSofaID: str='html2textView', value_between_tagtype: \
+    def segment_and_add_to_cas( self, cas, typesystem: TypeSystem , OldSofaID: str="_InitialView" , NewSofaID: str='html2textView', value_between_tagtype: \
                             str="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName:str='p' ):
         
         '''
@@ -45,6 +44,7 @@ class TextSegmenter():
         :return: None.        
         '''
         
+        self.cas = cas
         if self.segment_type=='deepsegment':
             self.load_deepsegment()
             self.segment_deepsegment()

@@ -17,6 +17,8 @@ app = Flask(__name__)
 TYPESYSTEM_PATH="/work/typesystems/typesystem.xml"
 DEEPSEGMENT_MODEL_PATH="/work/deepsegment_model"
     
+textsegmenter=TextSegmenter( DEEPSEGMENT_MODEL_PATH )
+
 @app.route('/annotate_paragraphs', methods=['POST'])
 def annotate_paragraphs():    
     if not request.json:
@@ -45,10 +47,9 @@ def annotate_paragraphs():
 
     if request.json[ 'content_type'] == 'pdf':
         
-        textsegmenter=TextSegmenter( cas , DEEPSEGMENT_MODEL_PATH )
         
         #use deepsegment model to segment the sofa ( _InitialView, result of Apache TiKa pdfparser)
-        textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
+        textsegmenter.segment_and_add_to_cas( cas, typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
                                   value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )
         
         #no annotation of the paragraphs for pdf (i.e. lists/sublist), would introduce too much noise
