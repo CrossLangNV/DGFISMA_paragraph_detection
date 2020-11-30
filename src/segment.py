@@ -98,8 +98,9 @@ class TextSegmenter():
         :return: None.
         '''
         
-        print( f"loading spacy model {self.segment_path}" )
-        self.segmenter=spacy.load( self.segment_path )
+        if not hasattr( self, 'segmenter' ):
+            print( f"loading spacy model {self.segment_path}" )
+            self.segmenter=spacy.load( self.segment_path )
         
     def segment_spacy(self ):    
         

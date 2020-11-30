@@ -57,14 +57,14 @@ def test_text_segmenter( get_path_txt, get_path_embeddings, get_path_typesystem 
                 
                 if segment_type=='deepsegment':
             
-                    textsegmenter=TextSegmenter( cas, output_dir, segment_type=segment_type )
+                    textsegmenter=TextSegmenter( output_dir, segment_type=segment_type )
                 
                 elif segment_type=='spacy':
                     
-                    textsegmenter=TextSegmenter( cas, 'en_core_web_lg' , segment_type=segment_type )
+                    textsegmenter=TextSegmenter( 'en_core_web_lg' , segment_type=segment_type )
 
                 #4) segment the sofa of the _InitialView of the cas, create html2textView, and add to Cas.
-                textsegmenter.segment_and_add_to_cas( typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
+                textsegmenter.segment_and_add_to_cas( cas, typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
                                               value_between_tagtype="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", tagName='p' )
 
                 assert( isinstance( cas.get_view( "html2textView" ).sofa_string, str ) )

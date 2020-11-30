@@ -78,6 +78,7 @@ def main(segments: Path,
     x, y = generate_data( sentences[:train_size] , max_sents_per_example=max_sents_per_example, n_examples=len( sentences[:train_size])  )
     vx, vy = generate_data( sentences[train_size:] , max_sents_per_example=max_sents_per_example, n_examples=len( sentences[train_size:] ) )
 
+    #Fix for problem with logging in Deepsegment library
     f = io.StringIO()
     with redirect_stdout(f):
         train(x, y, vx, vy, epochs=epochs, batch_size=batch_size, save_folder=output_dir , glove_path= embeddings_path )
