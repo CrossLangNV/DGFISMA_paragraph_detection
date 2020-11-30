@@ -82,4 +82,4 @@ def index():
     return "Up and running"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=False)
+    app.run(host='0.0.0.0', port=5003, debug=True, threaded=False)
