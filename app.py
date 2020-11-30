@@ -44,7 +44,8 @@ def annotate_paragraphs():
 
     #load the cas:
     cas=load_cas_from_xmi( decoded_cas_content, typesystem=typesystem  )
-
+        
+    
     if request.json[ 'content_type'] == 'pdf':
         
         
