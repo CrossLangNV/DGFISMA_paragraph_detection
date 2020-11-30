@@ -31,7 +31,7 @@ def annotate_lists_eurlex_html( cas: Cas, typesystem: TypeSystem, SofaID:str, \
     
     value_between_tagtype_generator=cas.get_view( SofaID ).select( value_between_tagtype )        
     
-    seek_vbtt=SeekableIterator( value_between_tagtype_generator )
+    seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
 
     process_eurlex_html( cas, typesystem, SofaID, seek_vbtt , value_between_tagtype=value_between_tagtype, paragraph_type=paragraph_type  )
     
@@ -59,7 +59,7 @@ def annotate_lists_flat_html_pdf( cas: Cas, typesystem: TypeSystem, SofaID:str, 
     
     value_between_tagtype_generator=get_deepest_child_tags( cas, SofaID, tagnames = set( 'p'), value_between_tagtype = value_between_tagtype ) 
     
-    seek_vbtt=SeekableIterator( value_between_tagtype_generator )
+    seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
     
     process_flat_html_pdf( cas, typesystem, SofaID, seek_vbtt, \
                            paragraph_type = paragraph_type, nested=False )
