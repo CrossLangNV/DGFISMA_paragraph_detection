@@ -23,7 +23,7 @@ I.e.: `cas.get_view( 'html2textView' ).select( "de.tudarmstadt.ukp.dkpro.core.ap
 
 We refer to tests/test_files/xmi/ for example xmi's, and to be extracted enumerations. Corresponding html's and json (containing CAS objects in base64) are also provided.
 
-Note that currently, detection of enumeration, is only supported for "html" files (i.e. "cas_content" equal to "html" ). 
+Note that currently, detection of enumeration, is only supported for "html" files (i.e. "content_type" equal to "html" ). 
 
 ## DeepSegment:
 
