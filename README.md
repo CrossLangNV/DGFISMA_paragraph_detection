@@ -15,7 +15,7 @@ Given a json, e.g.: https://github.com/CrossLangNV/DGFISMA_paragraph_detection/b
 
 The "cas_content" is a UIMA CAS object, encoded in base64. The "content_type" can be "html" or "pdf". 
 
-If the content_type is "pdf", the sofa_string in the `_ InitialView` of the CAS (output of a pdf parser, e.g. Apache Tika) will be segmented by a pretrained [DeepSegment](https://pypi.org/project/deepsegment/) model. The segmented text will be added as a new view ( `html2textView`), and segments will be annotated as `com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType` with `tagName='p'`.
+If the content_type is "pdf", the sofa_string in the `_InitialView` of the CAS (output of a pdf parser, e.g. Apache Tika) will be segmented by a pretrained [DeepSegment](https://pypi.org/project/deepsegment/) model. The segmented text will be added as a new view ( `html2textView`), and segments will be annotated as `com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType` with `tagName='p'`.
 
 If the content_type is "html", and if enumerations are found, paragraph annotations will be added to the CAS object ( `de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph` ) on the 'html2textView', with `divType="enumeration"`.
 
