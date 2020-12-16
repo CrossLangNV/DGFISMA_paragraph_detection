@@ -21,6 +21,8 @@ If the content_type is "html", and if enumerations are found, paragraph annotati
 
 Note that currently, detection of enumeration, is only supported for "html" files (i.e. "content_type" equal to "html" ). 
 
+We refer to the following diagram for an overview:
+
 ![overview](https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/images/par_detect.png?raw=true)
 
 ## DeepSegment:
