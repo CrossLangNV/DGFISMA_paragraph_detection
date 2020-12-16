@@ -9,9 +9,9 @@ Make sure to:
 
 1) Set the path to the correct typesystem in `dbuild.sh` ( e.g. https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/typesystems/typesystem.xml )
 
-2) Set the path to a pretrained deepSegment model in `dbuild.sh` ( see https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0 ).
+2) Set the path to a pretrained DeepSegment model in `dbuild.sh` ( see https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0 ).
 
-Given a json, e.g.: https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/json/minus_lesser_of.json , with a "cas_content" and "content_type" field, a json with the same fields will be returned (e.g. https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/response_json/small_nested_tables_response.json) , but with extra annotations and/or view added. 
+Given a json, e.g.: https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/json/minus_lesser_of.json , with a "cas_content" and "content_type" field, a json with the same fields will be returned (e.g. https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/response_json/small_nested_tables_response.json) , but with extra annotations and/or view added to the base64 encoded CAS object. 
 
 The "cas_content" is a UIMA CAS object, encoded in base64. The "content_type" can be "html" or "pdf". 
 
@@ -21,6 +21,8 @@ If the content_type is "html", and if enumerations are found, paragraph annotati
 
 Note that currently, detection of enumeration, is only supported for "html" files (i.e. "content_type" equal to "html" ). 
 
+![overview](https://github.com/CrossLangNV/DGFISMA_paragraph_detection/blob/master/tests/test_files/images/par_detect.png?raw=true)
+
 ## DeepSegment:
 
 This repository contains user scripts to train a DeepSegment model (`user_scripts/train_deepsegment.py`). One can either use pretrained embeddings (e.g. Glove embeddings http://nlp.stanford.edu/data/glove.6B.zip ), or train fastText embeddings (`user_scripts/train_fastText.py`).
@@ -28,15 +30,15 @@ This repository contains user scripts to train a DeepSegment model (`user_script
 
 1) Training data fastText/DeepSegment. 
 
-The training data consists of 3M segments scraped from the EUR-lex website. 
+We provide training data consisting of 3M segments scraped from the EUR-lex website. 
 
 (see https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0)
 
 By selecting the text in between `p`tags of these scraped html's we obtained a collection of sentences that are well segmented. As an extra cleaning step, we limited ourself to segments containing more than 2 tokens, less than 1000 characters, and containing at least on alphabetic character.
 
-The FastText model was trained on 3M segments, and the DeepSegment model on a random subset of 1M segments. 
+The fastText model was trained on 3M segments, and the DeepSegment model on a random subset of 1M segments. 
 
-See https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0 for pretrained FastText and DeepSegment models.
+See https://github.com/CrossLangNV/DGFISMA_paragraph_detection/releases/tag/v1.0 for pretrained fastText and DeepSegment models.
 
 
 2) Train fastText embeddings:
@@ -103,7 +105,7 @@ The sentences used for validation should be segments split via newline ("\n"). T
 
 We also provide support for sentence segmentation with Spacy.
 
-Given a CAS with to be segmented text in the sofa of the OldSofaID, one can add a new view (NewSofaID) with "spacy-segmented" text via:
+Given a CAS with to be segmented text in the sofa of the OldSofaID view, one can add a new view (NewSofaID) with "spacy-segmented" text via:
 
 ```
 from segment import TextSegmenter
