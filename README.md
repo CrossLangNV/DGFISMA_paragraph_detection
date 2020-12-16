@@ -19,10 +19,6 @@ If the content_type is "pdf", the sofa_string in the `_InitialView` of the CAS (
 
 If the content_type is "html", and if enumerations are found, paragraph annotations will be added to the CAS object ( `de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph` ) on the 'html2textView', with `divType="enumeration"`.
 
-I.e.: `cas.get_view( 'html2textView' ).select( "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph" )` will return a list containing all paragraph annotations. Using the `.get_covered_text()` method will return the covered text ( e.g. `cas.get_view( 'html2textView' ).select( "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph" ))[0].get_covered_text()` ).
-
-We refer to tests/test_files/xmi/ for example xmi's, and to be extracted enumerations. Corresponding html's and json (containing CAS objects in base64) are also provided.
-
 Note that currently, detection of enumeration, is only supported for "html" files (i.e. "content_type" equal to "html" ). 
 
 ## DeepSegment:
