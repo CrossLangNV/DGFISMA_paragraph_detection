@@ -84,7 +84,7 @@ fasttext_output_dir/model.vec \
 -train_fraction 0.95, \
 -batch_size=64*
 
-4) Evaluate Deepsegment:
+4) Evaluate DeepSegment:
 
 ```
 from user_scripts import evaluate_deepsegment
