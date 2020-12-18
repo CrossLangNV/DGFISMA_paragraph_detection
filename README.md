@@ -15,9 +15,9 @@ Given a json, e.g.: https://github.com/CrossLangNV/DGFISMA_paragraph_detection/b
 
 The "cas_content" is a UIMA CAS object, encoded in base64. The "content_type" can be "html" or "pdf". 
 
-If the content_type is "pdf", the sofa_string in the `_InitialView` of the CAS (output of a pdf parser, e.g. [Apache Tika](https://tika.apache.org/0.7/parser.html)) will be segmented by a pretrained [DeepSegment](https://pypi.org/project/deepsegment/) model. The segmented text will be added as a new view ( `html2textView`), and segments will be annotated as `com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType` with `tagName='p'`.
+If the content_type is "pdf", the sofa_string in the `_InitialView` of the CAS (output of a pdf parser, e.g. [Apache Tika](https://tika.apache.org/0.7/parser.html)) will be segmented by a pretrained [DeepSegment](https://pypi.org/project/deepsegment/) model. The segmented text will be added as a new view ( TEXT_SOFA_ID=`html2textView`), and segments will be annotated as VALUE_BETWEEN_TAG_TYPE=`com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType` with `tagName='p'`.
 
-If the content_type is "html", and if enumerations are found, paragraph annotations will be added to the CAS object ( `de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph` ) on the 'html2textView', with `divType="enumeration"`.
+If the content_type is "html", and if enumerations are found, paragraph annotations will be added to the CAS object ( PARAGRAPH_TYPE=`de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph` ) on the 'html2textView', with `divType="enumeration"`.
 
 Note that currently, detection of enumeration, is only supported for "html" files (i.e. "content_type" equal to "html" ). 
 
