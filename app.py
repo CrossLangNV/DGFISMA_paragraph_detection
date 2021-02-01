@@ -43,11 +43,10 @@ def annotate_paragraphs():
         typesystem = load_typesystem(f)
 
     #load the cas:
-    cas=load_cas_from_xmi( decoded_cas_content, typesystem=typesystem  )
+    cas=load_cas_from_xmi( decoded_cas_content, typesystem=typesystem, trusted=True  )
         
     
     if request.json[ 'content_type'] == 'pdf':
-        
         
         #use deepsegment model to segment the sofa ( _InitialView, result of Apache TiKa pdfparser)
         textsegmenter.segment_and_add_to_cas( cas, typesystem , OldSofaID="_InitialView" , NewSofaID='html2textView', \
